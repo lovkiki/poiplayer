@@ -93,4 +93,9 @@ public class ThreadController {
         jf.UpdateMusicInfo();
         Play();
     }
+    public void SetVolumn(float volumn){
+        if(pt != null){
+            pt.volumn = volumn;
+        }
+    }
 }

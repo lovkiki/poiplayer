@@ -36,4 +36,5 @@ public abstract class pThread extends Thread{
     int n;
     ThreadController tc;
     ListManager listManager;
+    public float volumn = 1.0f;
 }

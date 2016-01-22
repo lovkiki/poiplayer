@@ -55,7 +55,7 @@ public class UI {
     JButton btn_prev, btn_play, btn_next;//上一首、播放/暂停、下一首
     JButton btn_i, btn_f, btn_x;//info、打开文件夹、关闭（右上三个小按钮）
     JLabel SongName;//显示当前歌曲名字
-    int mx, my;//用于拖放窗口时记录鼠标位置
+    int mx, my, mx2;//用于拖放窗口时记录鼠标位置
     PopupMenu pm;//poi头像的右键菜单
     Dimension screen;//获取屏幕大小
     Image poiImg, bgImg, moveBgImg1, moveBgImg2, playBgImg1, playBgImg2;//各种背景图片
@@ -667,7 +667,7 @@ public class UI {
         ver.setLocation(5, 0);
         ver.setSize(100, 10);
         ver.setFont(new java.awt.Font("Dialog", 0, 10));
-        ver2.setText(" β 0.1");
+        ver2.setText(" β 0.3");
         ver2.setLocation(30, 10);
         ver2.setSize(100, 10);
         ver2.setFont(new java.awt.Font("Dialog", 0, 10));
@@ -691,17 +691,31 @@ public class UI {
         volumnPanel = new JPanel(){
             public void paint(Graphics g){
                 g.drawImage(volumnImg, 0, 0, volumnPanel);
-                g.setColor(Color.black);
-                g.fillRect(20, 0, volumnPanel.getWidth(), volumnPanel.getHeight());
+                g.setColor(Color.gray);
+                g.drawRect(20, 6, 99, 3);
+                g.drawLine(99, 0, 99, 16);
+                g.setColor(Color.ORANGE);
+                g.fillRect(mx2 - 3, 0, 6, 15);
+                g.setColor(Color.yellow);
+                g.drawRect(mx2 - 3, 0, 6, 15);
             }
         };
         volumnPanel.setSize(100, 16);
-        volumnPanel.setLocation(160, 165);
+        volumnPanel.setLocation(175, 165);
+        mx2 = 85;
+        volumnPanel.repaint();
         volumnPanel.addMouseMotionListener(new MouseMotionListener() {
             @Override
             public void mouseDragged(MouseEvent e) {
-                mx = e.getX();
-                System.out.println(mx);
+                mx2 = e.getX();
+                if(mx2 > 95){
+                    mx2 = 95;
+                }
+                if(mx2 < 23){
+                    mx2 = 23;
+                }
+                float d = (float)(mx2 - 23) / 62;
+                tc.SetVolumn(d);
                 volumnPanel.repaint();
             }
             @Override

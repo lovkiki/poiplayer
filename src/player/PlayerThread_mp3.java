@@ -59,9 +59,8 @@ public class PlayerThread_mp3 extends pThread{
                 }
                 s = (SampleBuffer)d.decodeFrame(h, b);
                 Wave();
-                
                 for(int i = 0; i <s.getBufferLength(); i++){
-                    s.getBuffer()[i] /= 8;
+                    s.getBuffer()[i] *= volumn;
                 }
                 audio.write(s.getBuffer(), 0, s.getBufferLength());
                 b.closeFrame();
