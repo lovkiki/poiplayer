@@ -37,6 +37,7 @@ public class ThreadController {
                     pt.pause = true;
                     System.out.println("Ready to start, pt.pause=" + pt.pause + " pt.pos=" + pt.pos);
                 }
+                SetVolumn(jf.volumn);
                 pt.start();
             }
             return true;
@@ -96,6 +97,7 @@ public class ThreadController {
     public void SetVolumn(float volumn){
         if(pt != null){
             pt.volumn = volumn;
+            System.out.println(volumn);
         }
     }
 }

@@ -4,3 +4,6 @@ v0.2
 3.Under GPL（GNU General Public License），GNU通用公共许可证;
 4.修复不会自动播放下一首的问题
 5.歌曲名字前面加上了当前序号和总数
+
+v0.3
+1.增加音量控制

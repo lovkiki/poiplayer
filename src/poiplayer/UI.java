@@ -81,7 +81,7 @@ public class UI {
     DropTarget dt;//用于拖放
     DropTargetListener dtl;//用于拖放的Listener
     JPanel volumnPanel;
-    int volumn = 100;
+    float volumn = 1.0f;
     
     public UI(){
         listManager = new ListManager();
@@ -715,6 +715,7 @@ public class UI {
                     mx2 = 23;
                 }
                 float d = (float)(mx2 - 23) / 62;
+                volumn = d;
                 tc.SetVolumn(d);
                 volumnPanel.repaint();
             }
