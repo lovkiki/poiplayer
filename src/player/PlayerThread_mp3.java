@@ -44,6 +44,7 @@ public class PlayerThread_mp3 extends pThread{
             audio = r.createAudioDevice();
             audio.open(d);
             n = Integer.MAX_VALUE;
+            short[] ts = new short[4];
             //暂停后跳过先前的部分
             while(pos-- > 0 && pause){
                 b.readFrame();
@@ -59,10 +60,13 @@ public class PlayerThread_mp3 extends pThread{
                 }
                 s = (SampleBuffer)d.decodeFrame(h, b);
                 Wave();
-                for(int i = 0; i <s.getBufferLength(); i++){
-                    s.getBuffer()[i] *= volumn;
+                for(int i = 0; i < s.getBufferLength() / 4; i++){
+                    for(int j = 0; j < 4; j++){
+                        ts[j] = (short)(s.getBuffer()[i * 4 + j] * volumn);
+                    }
+                    audio.write(ts, 0, 4);
                 }
-                audio.write(s.getBuffer(), 0, s.getBufferLength());
+                
                 b.closeFrame();
             }
             //渐弱
