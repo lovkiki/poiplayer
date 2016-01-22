@@ -58,8 +58,12 @@ public class PlayerThread_mp3 extends pThread{
                     break;
                 }
                 s = (SampleBuffer)d.decodeFrame(h, b);
-                audio.write(s.getBuffer(), 0, s.getBufferLength());
                 Wave();
+                
+                for(int i = 0; i <s.getBufferLength(); i++){
+                    s.getBuffer()[i] /= 8;
+                }
+                audio.write(s.getBuffer(), 0, s.getBufferLength());
                 b.closeFrame();
             }
             //渐弱

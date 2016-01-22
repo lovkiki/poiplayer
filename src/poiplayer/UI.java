@@ -61,6 +61,7 @@ public class UI {
     Image poiImg, bgImg, moveBgImg1, moveBgImg2, playBgImg1, playBgImg2;//各种背景图片
     Image triL, triR, playImg, pauseImg;//三个播放控制按钮的图片
     Image i1Img, i2Img, f1Img, f2Img, x1Img, x2Img;//右上三个小按钮的图片
+    Image volumnImg;//音量标识
     BufferedImage waveImg;//波形所用的图片
     int stPrev, stPlay, stNext;//三个播放控制按钮的状态标识
     boolean stBtni, stBtnf, stBtnx;//右上三个小按钮的状态标识
@@ -68,6 +69,7 @@ public class UI {
     java.net.URL triLURL, triRURL, playImgURL, pauseImgURL;//播放、上一首、下一首按钮的图片URL
     java.net.URL i1URL, i2URL, f1URL, f2URL, x1URL, x2URL;//右上角小图标的图片URL
     java.net.URL waveImgURL;//波形图片的URL
+    java.net.URL volumnImgURL;//音量标识图片URL
     boolean alwaysTop;//置顶标识
     boolean isPlaying;//播放标识
     ThreadController tc;//播放线程控制器
@@ -78,6 +80,8 @@ public class UI {
     ListManager listManager;//歌单控制器
     DropTarget dt;//用于拖放
     DropTargetListener dtl;//用于拖放的Listener
+    JPanel volumnPanel;
+    int volumn = 100;
     
     public UI(){
         listManager = new ListManager();
@@ -180,6 +184,8 @@ public class UI {
             x1URL = UI.class.getResource("assets/x1.png");
             x2URL = UI.class.getResource("assets/x2.png");
             
+            volumnImgURL = UI.class.getResource("assets/volumn.png");
+            
             poiImg = ImageIO.read(poiImgURL);
             bgImg = ImageIO.read(bgImgURL);
             moveBgImg1 = ImageIO.read(MoveBgImgURL);
@@ -200,6 +206,8 @@ public class UI {
             x2Img = ImageIO.read(x2URL);
             
             waveImg = ImageIO.read(waveImgURL);
+            
+            volumnImg = ImageIO.read(volumnImgURL);
             
         } catch (IOException ex) {
             Logger.getLogger(UI.class.getName()).log(Level.SEVERE, null, ex);
@@ -680,6 +688,26 @@ public class UI {
         info.add(author2, BorderLayout.WEST);
         info.setVisible(false);
         
+        volumnPanel = new JPanel(){
+            public void paint(Graphics g){
+                g.drawImage(volumnImg, 0, 0, volumnPanel);
+                g.setColor(Color.black);
+                g.fillRect(20, 0, volumnPanel.getWidth(), volumnPanel.getHeight());
+            }
+        };
+        volumnPanel.setSize(100, 16);
+        volumnPanel.setLocation(160, 165);
+        volumnPanel.addMouseMotionListener(new MouseMotionListener() {
+            @Override
+            public void mouseDragged(MouseEvent e) {
+                mx = e.getX();
+                System.out.println(mx);
+                volumnPanel.repaint();
+            }
+            @Override
+            public void mouseMoved(MouseEvent e) {}
+        });
+        
         //向jframe添加控件，注意顺序
         p.add(btn_prev);
         p.add(btn_play);
@@ -690,6 +718,7 @@ public class UI {
         p.add(title);
         
         p.add(info);
+        p.add(volumnPanel);
         p.add(bg);
         p.add(poipic);
         p.add(waveContainer);
@@ -807,7 +836,7 @@ public class UI {
         title.setText(s);
     }
     
-    
+    //读取上次的目录(本来用作入口的，现在闲置)
     public void go(String[] args){
         String s = ReadPath();
         File f = new File(s);
@@ -815,7 +844,7 @@ public class UI {
         this.UpdateMusicInfo();
     }
     
-    
+    //读取上次的目录
     private String ReadPath(){
         String osName = System.getProperties().getProperty("os.name");
         File f;
