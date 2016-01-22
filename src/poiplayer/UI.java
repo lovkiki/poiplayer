@@ -26,7 +26,10 @@ import java.awt.event.MouseMotionListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.awt.image.BufferedImage;
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.List;
@@ -156,26 +159,26 @@ public class UI {
         //打包图片进jar，用下面这个方法，马克
         //别的方法好像读不出来
         try {
-            poiImgURL = main.class.getResource("assets/poi_128x.png");
-            bgImgURL = main.class.getResource("assets/bg2.png");
-            MoveBgImgURL = main.class.getResource("assets/chilun_off2.png");
-            playBgImgURL = main.class.getResource("assets/dachilun_off2.png");
-            MoveBgImg2URL = main.class.getResource("assets/chilun_on2.png");
-            playBgImg2URL = main.class.getResource("assets/dachilun_on2.png");
+            poiImgURL = UI.class.getResource("assets/poi_128x.png");
+            bgImgURL = UI.class.getResource("assets/bg2.png");
+            MoveBgImgURL = UI.class.getResource("assets/chilun_off2.png");
+            playBgImgURL = UI.class.getResource("assets/dachilun_off2.png");
+            MoveBgImg2URL = UI.class.getResource("assets/chilun_on2.png");
+            playBgImg2URL = UI.class.getResource("assets/dachilun_on2.png");
             
-            waveImgURL = main.class.getResource("assets/wave.png");
+            waveImgURL = UI.class.getResource("assets/wave.png");
             
-            triLURL = main.class.getResource("assets/btn_prev_hover.png");
-            triRURL = main.class.getResource("assets/btn_next_hover.png");
-            playImgURL = main.class.getResource("assets/btn_play_hover2.png");
-            pauseImgURL = main.class.getResource("assets/btn_pause_hover2.png");
+            triLURL = UI.class.getResource("assets/btn_prev_hover.png");
+            triRURL = UI.class.getResource("assets/btn_next_hover.png");
+            playImgURL = UI.class.getResource("assets/btn_play_hover2.png");
+            pauseImgURL = UI.class.getResource("assets/btn_pause_hover2.png");
             
-            i1URL = main.class.getResource("assets/i1.png");
-            i2URL = main.class.getResource("assets/i2.png");
-            f1URL = main.class.getResource("assets/f1.png");
-            f2URL = main.class.getResource("assets/f2.png");
-            x1URL = main.class.getResource("assets/x1.png");
-            x2URL = main.class.getResource("assets/x2.png");
+            i1URL = UI.class.getResource("assets/i1.png");
+            i2URL = UI.class.getResource("assets/i2.png");
+            f1URL = UI.class.getResource("assets/f1.png");
+            f2URL = UI.class.getResource("assets/f2.png");
+            x1URL = UI.class.getResource("assets/x1.png");
+            x2URL = UI.class.getResource("assets/x2.png");
             
             poiImg = ImageIO.read(poiImgURL);
             bgImg = ImageIO.read(bgImgURL);
@@ -802,5 +805,46 @@ public class UI {
         String s = "[" + (listManager.GetCursor() + 1) + "/" + listManager.GetCount() + "] ";
         s += listManager.GetName(listManager.GetCursor());
         title.setText(s);
+    }
+    
+    
+    public void go(String[] args){
+        String s = ReadPath();
+        File f = new File(s);
+        this.listManager.InitList(f.getPath());
+        this.UpdateMusicInfo();
+    }
+    
+    
+    private String ReadPath(){
+        String osName = System.getProperties().getProperty("os.name");
+        File f;
+        if (osName.contains("Windows")){
+            f = new File(".\\path.txt");
+        }
+        else {
+            f = new File("./path.txt");
+        }
+        if(f.exists()){
+            try {
+                FileReader fileReader;
+                BufferedReader br;
+                if (osName.contains("Windows")){
+                    fileReader = new FileReader(".\\path.txt");
+                }
+                else {
+                    fileReader = new FileReader("./path.txt");
+                }
+                br = new BufferedReader(fileReader);
+                String s = br.readLine();
+//                System.out.println(s);
+                return s;
+            } catch (FileNotFoundException ex) {
+                Logger.getLogger(UI.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (IOException ex) {
+                Logger.getLogger(UI.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        return null;
     }
 }
