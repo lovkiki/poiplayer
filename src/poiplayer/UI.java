@@ -715,7 +715,7 @@ public class UI {
         ver.setLocation(5, 0);
         ver.setSize(100, 10);
         ver.setFont(new java.awt.Font("Dialog", 0, 10));
-        ver2.setText(" β 0.3");
+        ver2.setText(" β 0.4");
         ver2.setLocation(30, 10);
         ver2.setSize(100, 10);
         ver2.setFont(new java.awt.Font("Dialog", 0, 10));
