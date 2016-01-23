@@ -9,14 +9,19 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.sound.sampled.AudioFormat;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.DataLine;
+import javax.sound.sampled.FloatControl;
+import javax.sound.sampled.LineUnavailableException;
+import javax.sound.sampled.SourceDataLine;
 import javazoom.jl.decoder.Bitstream;
 import javazoom.jl.decoder.Decoder;
 import javazoom.jl.decoder.Header;
 import javazoom.jl.decoder.JavaLayerException;
 import javazoom.jl.decoder.SampleBuffer;
-import javazoom.jl.player.AudioDevice;
-import javazoom.jl.player.FactoryRegistry;
 import org.jtransforms.fft.FloatFFT_1D;
+import org.kc7bfi.jflac.metadata.StreamInfo;
 import poiplayer.ListManager;
 import poiplayer.ThreadController;
 
@@ -28,9 +33,12 @@ public class PlayerThread_mp3 extends pThread{
     Decoder d;
     Header h;
     Bitstream b;
-    AudioDevice audio;
     SampleBuffer s;
-    private int n;
+    private int n = 0;
+    FloatControl fc;
+    byte[] byteBuf = new byte[4096];
+    byte[] bt;
+    int bitRate;
     public PlayerThread_mp3(int[] wave, int _pos, ThreadController _tc, ListManager lm){
         listManager = lm;
         tc = _tc;
@@ -40,67 +48,76 @@ public class PlayerThread_mp3 extends pThread{
     }
     @Override
     public void run(){
+        AudioFormat af;  
+        DataLine.Info dli;  
+        SourceDataLine sdl = null;
+        StreamInfo si;
         try {
             d = new Decoder();
             fis = new FileInputStream(listManager.GetPath(listManager.GetCursor()));
             b = new Bitstream(fis);
-            FactoryRegistry r = FactoryRegistry.systemRegistry();
-            audio = r.createAudioDevice();
-            audio.open(d);
-            n = Integer.MAX_VALUE;
-            short[] ts = new short[4];
+            h = b.readFrame();
+            d.decodeFrame(h, b);
+            b.unreadFrame();
+            bitRate = d.getOutputFrequency();
+            af = new AudioFormat(d.getOutputFrequency(), 16, d.getOutputChannels(), true, false);  
+            dli = new DataLine.Info(SourceDataLine.class, af);
+            sdl = (SourceDataLine) AudioSystem.getLine(dli);  
+            sdl.open(af);
+            sdl.start();
+            
+            FloatControl fc = (FloatControl)sdl.getControl(FloatControl.Type.MASTER_GAIN);
+            tc.fc = fc;
+            tc.SetVolumn(tc.volumn);
             //暂停后跳过先前的部分
             while(pos-- > 0 && pause){
                 b.readFrame();
                 b.closeFrame();
-                n--;
+                n++;
             }
+
             //正常播放
-            while(n-- > 0 && !qflag){
+            while(!qflag){
                 h = b.readFrame();
                 if (h == null) {
                     break;
                 }
                 s = (SampleBuffer)d.decodeFrame(h, b);
+                byte[] byteData = toByteArray(s.getBuffer(), 0, s.getBufferLength());
+                bt = byteData;
+                sdl.write(byteData, 0, s.getBufferLength() * 2);
                 Wave();
-                for(int i = 0; i < s.getBufferLength() / 4; i++){
-                    audio.write(ts, 0, 4);
-                }
                 b.closeFrame();
+                n++;
             }
-            audio.flush();
-            //未完成退出
-            if(qflag){
-                audio.close();
-                audio = null;
-                b.close();
-            }
+            sdl.flush();
+            sdl.close();
             //完成自动退出
-            else {
-                audio.close();
-                audio = null;
-                b.close();
+            if(!qflag){
                 tc.Complete();
             }
         } catch (FileNotFoundException | JavaLayerException ex) {
             Logger.getLogger(PlayerThread_mp3.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (LineUnavailableException ex) {
+            Logger.getLogger(PlayerThread_mp3.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
     public int GetPosition(){
-        return Integer.MAX_VALUE - n;
+        return n;
     }
     @Override
     public void Wave(){
-        float[] a = new float[4608];
-        int[] aa = new int[2304];
-        for(int i = 0; i < 2304; i ++){
-            a[i] = (float)s.getBuffer()[i];
+        float[] a = new float[bt.length * 2];
+        int[] aa = new int[bt.length];
+        for(int i = 0; i < bt.length; i ++){
+            a[i] = (float)bt[i];
         }
-        f = new FloatFFT_1D(2304);
+        f = new FloatFFT_1D(bt.length);
         f.complexForward(a);
         for(int j = 0; j < 20; j ++){
             int i = j;
-            int t = (int)Math.sqrt(a[j*50]*a[j*50]+a[j*50+1]*a[j*50+1]) / h.bitrate() * 10;
+            int temp = bt.length / 20;
+            int t = (int)(Math.sqrt(a[j*temp]*a[j*temp]+a[j*temp+1]*a[j*temp+1]) / bitRate * 80);
             if(t < w[i] && w[i] > 0){
                 w[i] = w[i] - 1;
             }
@@ -118,5 +135,25 @@ public class PlayerThread_mp3 extends pThread{
                 w[i] = t;
             }
         }
+    }
+    private byte[] getByteArray(int length){
+        if (byteBuf.length < length)
+        {
+            byteBuf = new byte[length+1024];
+        }
+        return byteBuf;
+    }
+
+    private byte[] toByteArray(short[] samples, int offs, int len){
+        byte[] b = getByteArray(len*2);
+        int idx = 0;
+        short s;
+        while (len-- > 0)
+        {
+            s = samples[offs++];
+            b[idx++] = (byte)s;
+            b[idx++] = (byte)(s>>>8);
+        }
+        return b;
     }
 }

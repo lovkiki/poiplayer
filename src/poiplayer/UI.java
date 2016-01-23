@@ -81,7 +81,6 @@ public class UI {
     DropTarget dt;//用于拖放
     DropTargetListener dtl;//用于拖放的Listener
     JPanel volumnPanel;
-    float volumn = 1.0f;
     
     public UI(){
         listManager = new ListManager();
@@ -124,8 +123,12 @@ public class UI {
                             lastPath = files.get(0).getPath();
                         }
                         listManager.InitList(lastPath);
-                        UpdateMusicInfo();
                         WritePath(lastPath);
+                        tc.Stop();
+                        isPlaying = false;
+                        stPlay = 0;
+                        btn_play.repaint();
+                        UpdateMusicInfo();
                         PlayVoice_poi playVoice_poi = new PlayVoice_poi();
                         playVoice_poi.start();
                     }
@@ -134,6 +137,7 @@ public class UI {
         };
         dt = new DropTarget(p, dtl);
     }
+    
     private void InitComponent(){
         p = new JFrame();
         p.setSize(400, 400);
@@ -714,8 +718,7 @@ public class UI {
                 if(mx2 < 23){
                     mx2 = 23;
                 }
-                float d = (float)(mx2 - 23) / 62;
-                volumn = d;
+                float d = (float)(mx2 - 23);
                 tc.SetVolumn(d);
                 volumnPanel.repaint();
             }

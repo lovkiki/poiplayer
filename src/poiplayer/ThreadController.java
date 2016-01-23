@@ -1,5 +1,6 @@
 package poiplayer;
 
+import javax.sound.sampled.FloatControl;
 import javax.swing.JFrame;
 import player.*;
 
@@ -17,7 +18,8 @@ public class ThreadController {
     boolean pause;//暂停标志
     ListManager listManager;//得到歌单的控制器
     UI jf;//用来更新主界面
-    
+    public FloatControl fc;//控制音量
+    public float volumn = 62f;
     //构造函数，w接收波形数组后交给wave修改，ListManager是歌单控制器 
     public ThreadController(int[] w, ListManager lm, UI _jf){
         pause = false;
@@ -37,7 +39,7 @@ public class ThreadController {
                     pt.pause = true;
                     System.out.println("Ready to start, pt.pause=" + pt.pause + " pt.pos=" + pt.pos);
                 }
-                SetVolumn(jf.volumn);
+                SetVolumn(volumn);
                 pt.start();
             }
             return true;
@@ -74,6 +76,7 @@ public class ThreadController {
             pt = null;
         }
         pause = false;
+        pos = 0;
     }
     public void Pause(){
         if(pt != null){
@@ -94,10 +97,16 @@ public class ThreadController {
         jf.UpdateMusicInfo();
         Play();
     }
-    public void SetVolumn(float volumn){
-        if(pt != null){
-            pt.volumn = volumn;
-            System.out.println(volumn);
+    public void SetVolumn(float _volumn){
+        if(fc != null){
+            float t = (float)Math.log(_volumn) - 0.3f;
+            
+            if(t < 0){
+                t = 0;
+            }
+            t = t * 20 - 80;
+            fc.setValue(t);
+            volumn = _volumn;
         }
     }
 }

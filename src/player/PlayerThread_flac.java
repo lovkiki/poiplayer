@@ -12,7 +12,7 @@ import java.util.logging.Logger;
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.DataLine;
-import javax.sound.sampled.LineUnavailableException;
+import javax.sound.sampled.FloatControl;
 import javax.sound.sampled.SourceDataLine;
 import org.jtransforms.fft.FloatFFT_1D;
 import org.kc7bfi.jflac.FLACDecoder;
@@ -55,14 +55,18 @@ public class PlayerThread_flac extends pThread{
             md = flacDecoder.readMetadata();
             
             si = flacDecoder.getStreamInfo();
-            af = new AudioFormat(si.getSampleRate(), si.getBitsPerSample(), si.getChannels(), true, false);  
+            af = new AudioFormat(si.getSampleRate(), si.getBitsPerSample(), si.getChannels(), true, false);
+//            System.out.println(si.getBitsPerSample());
             bitRate = si.getSampleRate();
-            System.out.println(af.toString());
+//            System.out.println(af.toString());
             dli = new DataLine.Info(SourceDataLine.class, af);
             sdl = (SourceDataLine) AudioSystem.getLine(dli);  
             sdl.open(af);
             sdl.start();
             
+            FloatControl fc = (FloatControl)sdl.getControl(FloatControl.Type.MASTER_GAIN);
+            tc.fc = fc;
+            tc.SetVolumn(tc.volumn);
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -73,6 +77,7 @@ public class PlayerThread_flac extends pThread{
             } catch (IOException ex) {
                 Logger.getLogger(PlayerThread_flac.class.getName()).log(Level.SEVERE, null, ex);
             }
+            n++;
         }
         //正常播放
         while(!flacDecoder.isEOF() && !qflag){
@@ -92,22 +97,10 @@ public class PlayerThread_flac extends pThread{
             }
             n++;
         }
-        //渐弱
-        while(!flacDecoder.isEOF() && !qflag){
-            try {
-                frame = flacDecoder.readNextFrame();
-                if(frame == null){
-                    break;
-                }
-                else {
-                    bd = flacDecoder.decodeFrame(frame, bd);
-                    bt = bd.getData();
-                    Wave();
-                    sdl.write(bt, 0, bd.getLen());
-                }
-            } catch (IOException ex) {
-                Logger.getLogger(PlayerThread_flac.class.getName()).log(Level.SEVERE, null, ex);
-            }
+        sdl.flush();
+        sdl.close();
+        if(!qflag){
+            tc.Complete();
         }
     }
 
@@ -145,6 +138,6 @@ public class PlayerThread_flac extends pThread{
 
     @Override
     public int GetPosition() {
-        return 0;
+        return n;
     }
 }
