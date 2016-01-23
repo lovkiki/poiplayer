@@ -145,9 +145,9 @@ public class ListManager {
             if(s.contains("mp3")){
                 return ListManager.SupFormat.mp3;
             }
-//            else if(s.contains("flac")){
-//                return ListManager.SupFormat.flac;
-//            }
+            else if(s.contains("flac")){
+                return ListManager.SupFormat.flac;
+            }
 //
 //            else if(s.contains("ape")){
 //                return ListManager.SupFormat.ape;
@@ -171,7 +171,7 @@ public class ListManager {
     enum SupFormat{
         mp3,
 //        ogg,
-//        flac,
+        flac,
 //        ape
     }
 }

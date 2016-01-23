@@ -51,9 +51,9 @@ public class ThreadController {
                 case mp3:
                     pt = new PlayerThread_mp3(wave, pos, this, listManager);
                     break;
-//                case flac:
-//                    pt = new PlayerThread_flac();
-//                    break;
+                case flac:
+                    pt = new PlayerThread_flac(wave, pos, this, listManager);
+                    break;
 //                case ape:
 //                    pt = new PlayerThread_ape();
 //                    break;

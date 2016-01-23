@@ -21,20 +21,14 @@ import poiplayer.ThreadController;
  * @author WheatBerry
  */
 public abstract class pThread extends Thread{
-    public boolean comp = false;
     public FileInputStream fis = null;
-    Decoder d = null;
-    Header h = null;
-    Bitstream b = null;
     FloatFFT_1D f = null;
     int[] w;
     public boolean qflag, pause;
     public int pos;
-    AudioDevice audio;
+    ThreadController tc;//线程管理器
+    ListManager listManager;//歌单管理器
+    public float volumn = 1.0f;//音量系数
     public abstract int GetPosition();
-    SampleBuffer s;
-    int n;
-    ThreadController tc;
-    ListManager listManager;
-    public float volumn = 1.0f;
+    public abstract void Wave();
 }
