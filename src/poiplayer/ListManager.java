@@ -29,6 +29,7 @@ public class ListManager {
     
     //初始化列表，获取文件路径
     public void InitList(String _path){
+        cursor = 0;
         list.clear();
         path = _path;
         FormatSlash();
@@ -64,13 +65,14 @@ public class ListManager {
     
     //随机列表
     public void RandomList(){
+        cursor = 0;
         Random r = new Random();
         String[] l = new String[list.size()];
         for(int i = 0; i < l.length; i++){
             l[i] = list.get(i);
         }
         for(int i = 0; i < l.length; i++){
-            int n = r.nextInt();
+            int n = r.nextInt(l.length);
             String t = l[i];
             l[i] = l[n];
             l[n] = t;

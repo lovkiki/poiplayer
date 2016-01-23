@@ -54,6 +54,7 @@ public class UI {
     JPanel info;//显示info的容器
     JButton btn_prev, btn_play, btn_next;//上一首、播放/暂停、下一首
     JButton btn_i, btn_f, btn_x;//info、打开文件夹、关闭（右上三个小按钮）
+    JButton btn_r;//右上随机列表
     JLabel SongName;//显示当前歌曲名字
     int mx, my, mx2;//用于拖放窗口时记录鼠标位置
     PopupMenu pm;//poi头像的右键菜单
@@ -61,13 +62,16 @@ public class UI {
     Image poiImg, bgImg, moveBgImg1, moveBgImg2, playBgImg1, playBgImg2;//各种背景图片
     Image triL, triR, playImg, pauseImg;//三个播放控制按钮的图片
     Image i1Img, i2Img, f1Img, f2Img, x1Img, x2Img;//右上三个小按钮的图片
+    Image r1Img, r2Img;//随机列表按钮图片
     Image volumnImg;//音量标识
     BufferedImage waveImg;//波形所用的图片
     int stPrev, stPlay, stNext;//三个播放控制按钮的状态标识
     boolean stBtni, stBtnf, stBtnx;//右上三个小按钮的状态标识
+    boolean stBtnr;//右上随机列表按钮状态标识
     java.net.URL poiImgURL, bgImgURL, MoveBgImgURL, playBgImgURL, MoveBgImg2URL, playBgImg2URL;//各背景图片URL
     java.net.URL triLURL, triRURL, playImgURL, pauseImgURL;//播放、上一首、下一首按钮的图片URL
     java.net.URL i1URL, i2URL, f1URL, f2URL, x1URL, x2URL;//右上角小图标的图片URL
+    java.net.URL r1URL, r2URL;//随机列表图片URL；
     java.net.URL waveImgURL;//波形图片的URL
     java.net.URL volumnImgURL;//音量标识图片URL
     boolean alwaysTop;//置顶标识
@@ -187,6 +191,8 @@ public class UI {
             f2URL = UI.class.getResource("assets/f2.png");
             x1URL = UI.class.getResource("assets/x1.png");
             x2URL = UI.class.getResource("assets/x2.png");
+            r1URL = UI.class.getResource("assets/r1.png");
+            r2URL = UI.class.getResource("assets/r2.png");
             
             volumnImgURL = UI.class.getResource("assets/volumn.png");
             
@@ -208,6 +214,8 @@ public class UI {
             f2Img = ImageIO.read(f2URL);
             x1Img = ImageIO.read(x1URL);
             x2Img = ImageIO.read(x2URL);
+            r1Img = ImageIO.read(r1URL);
+            r2Img = ImageIO.read(r2URL);
             
             waveImg = ImageIO.read(waveImgURL);
             
@@ -535,7 +543,7 @@ public class UI {
             }
         });
         
-        stBtni = stBtnf = stBtnx = false;
+        stBtni = stBtnf = stBtnx = stBtnr = false;
         
         //右上角三个小按钮
         btn_i = new JButton(){
@@ -568,6 +576,17 @@ public class UI {
                 }
                 else {
                     g.drawImage(x1Img, 0, 0, 16, 16, btn_i);
+                }
+            }
+        };
+        btn_r = new JButton(){
+            @Override
+            public void paint(Graphics g){
+                if(stBtnr){
+                    g.drawImage(r2Img, 0, 0, 16, 16, btn_i);
+                }
+                else {
+                    g.drawImage(r1Img, 0, 0, 16, 16, btn_i);
                 }
             }
         };
@@ -637,9 +656,32 @@ public class UI {
                 btn_x.repaint();
             }
         });
+        btn_r.addMouseListener(new MouseListener() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                tc.Stop();
+                listManager.RandomList();
+                UpdateMusicInfo();
+            }
+            @Override
+            public void mousePressed(MouseEvent e) {}
+            @Override
+            public void mouseReleased(MouseEvent e) {}
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                stBtnr = true;
+                btn_r.repaint();
+            }
+            @Override
+            public void mouseExited(MouseEvent e) {
+                stBtnr = false;
+                btn_r.repaint();
+            }
+        });
         btn_i.setToolTipText("关于");
         btn_f.setToolTipText("选择文件夹");
         btn_x.setToolTipText("退出");
+        btn_r.setToolTipText("随机列表");
         
         btn_f.setSize(16, 16);
         btn_f.setLocation(228, 132);
@@ -647,6 +689,8 @@ public class UI {
         btn_i.setLocation(244, 132);
         btn_x.setSize(16, 16);
         btn_x.setLocation(260, 132);
+        btn_r.setSize(16, 16);
+        btn_r.setLocation(212, 132);
         
         title = new JLabel();
         title.setSize(150, 20);
@@ -733,6 +777,7 @@ public class UI {
         p.add(btn_i);
         p.add(btn_f);
         p.add(btn_x);
+        p.add(btn_r);
         p.add(title);
         
         p.add(info);
