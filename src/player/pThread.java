@@ -1,11 +1,6 @@
 package player;
 
 import java.io.FileInputStream;
-import javazoom.jl.decoder.Bitstream;
-import javazoom.jl.decoder.Decoder;
-import javazoom.jl.decoder.Header;
-import javazoom.jl.decoder.SampleBuffer;
-import javazoom.jl.player.AudioDevice;
 import org.jtransforms.fft.FloatFFT_1D;
 import poiplayer.ListManager;
 import poiplayer.ThreadController;

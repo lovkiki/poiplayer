@@ -14,7 +14,6 @@ public class ThreadController {
     ListManager.SupFormat sf;//用于选择解码器
     int[] wave;//控制UI中的波形显示的数组，会从UI中接收进来并进行修改
     int pos;//记录播放位置，以提供暂停、继续的功能
-    boolean qflag;//退出标志
     boolean pause;//暂停标志
     ListManager listManager;//得到歌单的控制器
     UI jf;//用来更新主界面
@@ -23,7 +22,6 @@ public class ThreadController {
     //构造函数，w接收波形数组后交给wave修改，ListManager是歌单控制器 
     public ThreadController(int[] w, ListManager lm, UI _jf){
         pause = false;
-        qflag = false;
         wave = w;
         pos = 0;
         listManager = lm;
@@ -37,10 +35,22 @@ public class ThreadController {
             if(pt != null){
                 if(pause){
                     pt.pause = true;
-                    System.out.println("Ready to start, pt.pause=" + pt.pause + " pt.pos=" + pt.pos);
                 }
                 SetVolumn(volumn);
                 pt.start();
+                System.out.println("ListManager info");
+                System.out.println(listManager.GetPath(listManager.GetCursor()));
+                System.out.println(listManager.GetCount()  + "/" + listManager.GetCursor());
+                
+                System.out.println("ThreadController info");
+                System.out.println("pause = " + pause);
+                System.out.println("pos = " + pos);
+                
+                System.out.println("PlayerThread info");
+                System.out.println("pt.pause = " + pt.pause);
+                System.out.println("pt.pos = " + pt.pos);
+                System.out.println("pt.qflag = " + pt.qflag);
+                System.out.println("volumn = " + pt.volumn);
             }
             return true;
         }
