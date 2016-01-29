@@ -82,9 +82,11 @@ public class ThreadController {
     //停止播放
     public void Stop(){
         if(pt != null){
+            pt.pos = 0;
             pt.qflag = true;
             pt = null;
         }
+        pos = 0;
         pause = false;
         pos = 0;
     }
