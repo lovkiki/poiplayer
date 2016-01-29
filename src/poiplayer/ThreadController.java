@@ -86,7 +86,6 @@ public class ThreadController {
             pt.qflag = true;
             pt = null;
         }
-        pos = 0;
         pause = false;
         pos = 0;
     }
@@ -101,10 +100,12 @@ public class ThreadController {
     //线程播放完成后执行
     public void Complete(){
         if(pt != null){
+            pt.pos = 0;
             pt.pause = false;
             pt = null;
         }
         pause = false;
+        pos = 0;
         listManager.MoveNext();
         jf.UpdateMusicInfo();
         Play();
